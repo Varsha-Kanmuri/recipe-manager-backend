@@ -1,5 +1,7 @@
 package com.monsanto.recipemanager.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monsanto.recipemanager.model.Recipe;
 import com.monsanto.recipemanager.service.impl.RecipeServiceImpl;
 import org.junit.Test;
@@ -96,4 +98,30 @@ public class RecipeControllerTest {
 
     }
 
+    @Test
+    public void testShould_add_recipe()
+            throws Exception {
+
+
+        List<Recipe> recipeList = new ArrayList<Recipe>();
+        
+        String recipeItems1[] = {"salt", "pepper", "garlic", "bread"};
+        Recipe recipe1 = new Recipe();
+        Set<String> items1 = new HashSet<String>(Arrays.asList(recipeItems1));
+        recipe1.setRecipeId(1);
+        recipe1.setRecipeName("Garlic Bread");
+        recipe1.setItems(items1);
+        recipeList.add(recipe1);
+
+        Mockito.when(recipeService.createRecipe(recipe1)).thenReturn(recipeList.get(0));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+
+        mvc.perform(post("/addRecipe")
+                .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(recipe1)))
+                .andExpect(status().isOk());
+
+    }
 }
