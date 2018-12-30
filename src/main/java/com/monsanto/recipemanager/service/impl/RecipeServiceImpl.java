@@ -26,6 +26,12 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Recipe createRecipe(Recipe recipe) {
+        List<Recipe> recipes = this.fetchRecipes();
+        for(Recipe recipeList : recipes) {
+            if(recipeList.getRecipeName().equalsIgnoreCase(recipe.getRecipeName())) {
+                throw new IllegalArgumentException();
+            }
+        }
         return recipeRepository.save(recipe);
     }
 
